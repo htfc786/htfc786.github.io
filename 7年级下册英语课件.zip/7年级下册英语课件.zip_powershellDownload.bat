@@ -1,0 +1,35 @@
+chcp 65001
+mkdir %Temp%\downloadTemp
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/src/7z.exe','%Temp%\downloadTemp\7z.exe')
+powershell (nebdfbhw-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/src/7z.dll','%Temp%\downloadTemp\7z.dll')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.001','%Temp%\downloadTemp\7年级下册英语课件.zip.001')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.002','%Temp%\downloadTemp\7年级下册英语课件.zip.002')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.003','%Temp%\downloadTemp\7年级下册英语课件.zip.003')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.004','%Temp%\downloadTemp\7年级下册英语课件.zip.004')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.005','%Temp%\downloadTemp\7年级下册英语课件.zip.005')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.006','%Temp%\downloadTemp\7年级下册英语课件.zip.006')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.007','%Temp%\downloadTemp\7年级下册英语课件.zip.007')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.008','%Temp%\downloadTemp\7年级下册英语课件.zip.008')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.009','%Temp%\downloadTemp\7年级下册英语课件.zip.009')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.010','%Temp%\downloadTemp\7年级下册英语课件.zip.010')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.011','%Temp%\downloadTemp\7年级下册英语课件.zip.011')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.012','%Temp%\downloadTemp\7年级下册英语课件.zip.012')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.013','%Temp%\downloadTemp\7年级下册英语课件.zip.013')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.014','%Temp%\downloadTemp\7年级下册英语课件.zip.014')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.015','%Temp%\downloadTemp\7年级下册英语课件.zip.015')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.016','%Temp%\downloadTemp\7年级下册英语课件.zip.016')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.017','%Temp%\downloadTemp\7年级下册英语课件.zip.017')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.018','%Temp%\downloadTemp\7年级下册英语课件.zip.018')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.019','%Temp%\downloadTemp\7年级下册英语课件.zip.019')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.020','%Temp%\downloadTemp\7年级下册英语课件.zip.020')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.021','%Temp%\downloadTemp\7年级下册英语课件.zip.021')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.022','%Temp%\downloadTemp\7年级下册英语课件.zip.022')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.023','%Temp%\downloadTemp\7年级下册英语课件.zip.023')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.024','%Temp%\downloadTemp\7年级下册英语课件.zip.024')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.025','%Temp%\downloadTemp\7年级下册英语课件.zip.025')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.026','%Temp%\downloadTemp\7年级下册英语课件.zip.026')
+powershell (new-object System.Net.WebClient).DownloadFile('http://htfc786.github.io/testnetdesk/7年级下册英语课件.zip/7年级下册英语课件.zip.027','%Temp%\downloadTemp\7年级下册英语课件.zip.027')
+%Temp%\downloadTemp\7z x -o. "%Temp%\downloadTemp\7年级下册英语课件.zip.001"
+del /s /q %Temp%\downloadTemp
+rd /s /q %Temp%\downloadTemp
+exit
