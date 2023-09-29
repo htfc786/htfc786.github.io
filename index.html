@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>跳转中...</title>
+    <link href="https://htfc786.github.io/zzti-online/loading.css" rel="stylesheet">
+</head>
+<body>
+  <div id="loading" class="isloading">
+    <div class="ant-spin">
+      <span class="dot"><i></i><i></i><i></i><i></i></span>
+      <div class="text">Loading...</div>
+    </div>
+  </div>
+</body>
+<script>
+function jump(url, id) {
+  let a = document.createElement("a");
+  a.setAttribute("href", url);
+  a.click();    
+}
+jump("https://htfc786.github.io/zzti-online/#/random")
+</script>
+</html>
