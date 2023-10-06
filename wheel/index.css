@@ -1,0 +1,254 @@
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+*, ::after, ::before {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* background: linear-gradient(0deg, #FFF3B0 0%,#da546d 100%); */
+    background: #da546d
+}
+.title {
+    display: inline-block;
+    position: absolute;
+    top: 20px;
+    font-size: 40px;
+    font-weight: bold;
+    color: rgb(253,254,107);
+    letter-spacing: 0.2em;
+}
+.container {
+    position: relative;
+    max-width: 400px;
+    max-height: 400px;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    --wheel-size: 360px;
+}
+.container .rotateBtn {
+    --btn-size: 60px;
+    --btn-rotate: 0deg;
+    position: absolute;
+    width: var(--btn-size);
+    height: var(--btn-size);
+    background-color: red;
+    border-radius: 50%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: rotate(var(--btn-rotate));
+    transition: transform 3s cubic-bezier(.2,.93,.43,1);
+}
+.container .rotateBtn::before {
+    content: "";
+    position: absolute;
+    top: calc(0px - var(--btn-size) / 2 + var(--btn-size) / 7.5);
+    width: calc(var(--btn-size) / 3);
+    height: calc(var(--btn-size) / 2);
+    background-color: red;
+    clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+}
+.container .rotateBtn span {
+    --inner-size: calc(var(--btn-size) * 4 / 5);
+    position: absolute;
+    width: var(--inner-size);
+    height: var(--inner-size);
+    border-radius: 50%;
+    z-index: 10;
+    line-height: var(--inner-size);
+    font-size: calc(var(--inner-size) / 3);
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transform: rotate(calc(0deg - var(--btn-rotate)));
+}
+.container .wheel_out {
+    position: relative;
+    height: 400px;
+    width: 400px;
+    padding: 20px;
+    margin: 20px;
+    background-color: #ff5555;
+    box-shadow: #000000 0px 0px 10px;
+    border-radius: 50%;
+}
+.container .light i{
+    position: absolute;
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    top: 6px;
+    left: 225px;
+    transform-origin: -25px 195px;
+    transform: rotate(var(--r, 0dge));
+}
+.container .light i:nth-child(2n) {
+    background-color: #fafce7;
+}
+.container .light i:nth-child(2n+1) {
+    background-color: #ffe58b;
+}
+.container .light-twinkling i{
+    animation: 1s twinkling 3, 100ms 3s twinkling 3;
+}
+.container .wheel {
+    position: relative;
+    height: var(--wheel-size);
+    width: var(--wheel-size);
+    border-radius: calc(var(--wheel-size) / 2);
+    background-image: -webkit-linear-gradient(top,#c43679,#d56152);
+    background-image: linear-gradient(180deg,#c43679,#d56152);
+    transform: rotateZ(calc(0deg - var(--wheel-rotate, 0deg)));
+    transition: transform 3s cubic-bezier(.2,.93,.43,1);
+}
+.container .wheel * {
+    box-sizing: content-box;
+}
+.container .wheel .item {
+    position: absolute;
+    left: calc(var(--wheel-size) / 2);
+    top: 0;
+    width: calc(var(--wheel-size) / 2);
+    height: var(--wheel-size);
+    font-size: 14px;
+    border-radius: 0 calc(var(--wheel-size) / 2) calc(var(--wheel-size) / 2) 0;
+    overflow: hidden;
+    transform-origin: left center;
+    transform: rotateZ(var(--r, -18deg));
+}
+.container .wheel .item div {
+    text-align: center;
+    display: block;
+    width: calc(var(--wheel-size) / 5);
+    padding: 0px calc(var(--wheel-size) * 3 / 200) 0px calc(var(--wheel-size) * 57 / 200);
+    height: var(--wheel-size);
+    transform: translateX(calc(0px - var(--wheel-size) / 2)) rotate(var(--o));
+    transform-origin: right center;
+    border-radius: calc(var(--wheel-size) / 2) 0 0 calc(var(--wheel-size) / 2);
+}
+.container .wheel .item span {
+    display: block;
+    color: #d46854;
+    font-size: calc(var(--wheel-size) / 20);
+    transform-origin: center;
+    transform: rotate(-19deg)
+        translateY(calc(var(--wheel-size) / 20))
+        translateX(calc(0px - var(--wheel-size) * 7 / 200));
+}
+.container .wheel .item:nth-child(2n) div {
+    background: rgb(254,244,61);
+}
+.container .wheel .item:nth-child(2n+1) div {
+    background: rgb(215,215,215);
+}
+@keyframes twinkling {
+    50% { background: transparent; }
+}
+.back {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.back a {
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+.gift-black{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    display: none;
+}
+.gift {
+    position: absolute;
+    width: 270px;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background-color: #c74d35;
+}
+.money {
+    width: 70%;
+    position: absolute;
+    top: 85px;
+    left: 50%;
+    margin-left: -35%;
+    text-align: center;
+}
+.money>span {
+    font-weight: 600;
+    font-size: 40px;
+    color: #efb263;
+}
+.money>p {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 26px;
+}
+.share {
+    width: 270px;
+    height: 100px;
+    position: absolute;
+    bottom: 20px;
+    background: #c74d35;
+    text-align: center;
+    border-radius: 0 0 25px 25px;
+}
+.share>p {
+    width: 80%;
+    line-height: 42px;
+    display: inline-block;
+    border-radius: 5px;
+    background: #efb263;
+    color: #c74d35;
+    font-size: 14px;
+    font-weight: 700;
+}
+.bad {
+    position: absolute;
+    width: 270px;
+    height: 140px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000;
+    background-color: #A8ABB2;
+}
+.bad .money {
+    top: 25px;
+}
+.bad .money>span {
+    font-size: 30px;
+    color: red;
+}

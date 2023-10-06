@@ -1,0 +1,49 @@
+<!-- 幸运大转盘 By htfc786 -->
+<!-- 放学路上看见小姜抽奖抽的不尽兴就帮他做了一个,可以抽到进行,还有debug!唯一的缺点就是收不到奖品 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>幸运大转盘</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="back">
+        <a href="../"><=返回上页</a>
+    </div>
+    <div class="title">
+        <span>幸运大转盘</span>
+    </div>
+    <div class="container">
+        <div class="rotateBtn"><span id="rotateBtn">抽奖</span></div>
+        <div class="wheel_out">
+            <div class="light"><i style="--r: 0deg"></i><i style="--r: 36deg"></i><i style="--r: 72deg"></i><i style="--r: 108deg"></i><i style="--r: 144deg"></i><i style="--r: 180deg"></i><i style="--r: 216deg"></i><i style="--r: 252deg"></i><i style="--r: 288deg"></i><i style="--r: 324deg"></i></div>
+            <div class="wheel" id="wheel" style="--o: 36deg; --wheel-rotate: 0deg"></div>
+        </div>
+    </div>
+    <div class="gift-black" id="giftshow">
+        <div class="gift">
+            <div class="money">
+                <span>恭喜你<br></span>
+                <!-- <p>副标题</p> -->
+            </div>
+            <div class="share">
+                <p id="giftshowtext"></p>
+            </div>
+        </div>
+    </div>
+    <div class="gift-black" id="badshow">
+        <div class="bad">
+            <div class="money">
+                <span>很遗憾<br>您没有中奖</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
+<!-- 参考：https://www.bilibili.com/video/BV1dP411g7pp/?spm_id_from=333.337.search-card.all.click&vd_source=5ca4c0021e2ea804d954c68ae21941e1 -->
+<!-- 参考：https://cloud.tencent.com/developer/article/1757816 -->
+<!-- 参考：https://z70k6b2.h5.hitoupiao.wang/?vid=z70k6b2&isLogin=T -->
