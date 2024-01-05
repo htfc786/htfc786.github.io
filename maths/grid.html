@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" style="overflow: hidden;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网格</title>
+</head>
+<body style="margin: 0;">
+    <div id="app" style="background-color: white;">
+        <canvas id="canvas"></canvas>
+        <div class="box">
+            <button type="button">进入全屏</button>
+        </div>
+    </div>
+<script>
+    //函数节流
+    function debounce(func, wait) {
+        var timeout;
+        return function () {
+            var context = this;
+            var args = arguments;
+            clearTimeout(timeout)
+            timeout = setTimeout(function(){
+                func.apply(context, args)
+            }, wait);
+        }
+    }
+    //是否全屏
+    function isFullScreen() {
+        return document.fullscreenElement !== null;
+    }
+    //进入全屏
+    function requestFullScreen(element) {
+        element.requestFullscreen()
+    }
+    // 退出全屏
+    function exitFullscreen() {
+        document.exitFullscreen()
+    }
+
+    const canvas = document.querySelector('#canvas')
+    const app = document.querySelector('#app')
+    const fullScreenBtn = document.querySelector('.box button')
+
+    function draw_grid(step=120) { // 绘制网格
+        // canvas上下文
+        const cxt = canvas.getContext('2d')
+        // 初始化 
+        cxt.beginPath()
+        // 画一个平面直角坐标系
+        cxt.lineWidth = 3
+        cxt.strokeStyle = 'grey'
+        for (var i=0;i<=canvas.height;i+=step){
+            cxt.moveTo(0, i) // 起点
+            cxt.lineTo(canvas.width, i) // 终点
+            cxt.stroke() // 将起点和终点连接起来
+        }
+        for (var i=0;i<=canvas.width;i+=step){
+            cxt.moveTo(i, 0)
+            cxt.lineTo(i, canvas.height)
+            cxt.stroke()
+        }
+
+    }
+
+    // 重绘网格
+    const redraw = debounce(function(){
+        // 改变画布大小，防止出现滚动条
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+        // 重新绘制网格
+        draw_grid()
+    }, 500)
+
+    // 当浏览器窗口大小变化时，重新绘制网格，使网格大小与浏览器窗口大小一致
+    window.addEventListener('resize', redraw);
+    redraw();
+
+    // 点击全屏按钮
+    fullScreenBtn.addEventListener('click', ()=>{
+        if (isFullScreen()){
+            exitFullscreen()
+        } else {
+            requestFullScreen(app)
+        }
+    });
+    // 全屏状态按钮文字切换
+    document.addEventListener("fullscreenchange",() => {
+        if (isFullScreen()){
+            fullScreenBtn.innerText = '退出全屏'
+        } else {
+            fullScreenBtn.innerText = '进入全屏'
+        }
+    });
+</script>
+<style>
+    .box{
+        position: fixed;
+        z-index: 10;
+        bottom: 0;
+        right: 0;
+        width: 80px;
+        height: 30px;
+    }
+</style>
+</body>
+</html>
