@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>单词小卡片</title>
+<script src="jspdf.umd.min.js"></script>
+<script src="html2canvas.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div class="paper">
+      <!-- 操作区 -->
+      <div class="paper-operate">
+        <button id="gen">生成卡片</button>
+        <button id="print">打印</button>
+        <button id="export">导出PDF</button>
+        <a target="_blank" src="https://github.com/htfc786/htfc786.github.io/tree/main/wordcard">代码开源</a>
+      </div>
+      <!-- 卡片展示 -->
+      <div id="paperlist"></div>
+    </div>
+    <div class="words">
+      <div class="wordlist-input">
+        <textarea id="wordliststring" placeholder="请粘贴单词表" rows="5"></textarea>
+      </div>
+      <!-- 操作按钮区 -->
+      <div class="wordlist-operate">
+        <button id="wordlistbtn">解析单词表</button>
+      </div>
+      <!-- 有标线 -->
+      <table class="wordlist" border>
+        <thead>
+          <tr><th width="32px">序号</th><th>单词</th><th>中文</th><th>音标</th></tr>
+        </thead>
+        <tbody id="wordlist"></tbody>
+      </table>
+    </div>
+  </div>
+<script src="scripts.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
