@@ -1,0 +1,195 @@
+/* ============================================================
+ * ui.css —— 左侧参数面板 + 舞台的界面样式（打印时全部隐藏）
+ * ============================================================ */
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  display: flex;
+  min-height: 100vh;
+  background: #eceff3;
+  color: #222;
+  font: 13px/1.6 system-ui, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+/* ---------- 左侧面板 ---------- */
+.panel {
+  width: 320px;
+  flex: none;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid #e3e6ea;
+}
+
+.panel__head {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #eef0f3;
+}
+.panel__head h1 { margin: 0 0 4px; font-size: 16px; }
+.hint { margin: 0; color: #8b93a1; font-size: 12px; }
+
+.panel__body { flex: 1; overflow-y: auto; padding: 8px 14px 14px; }
+
+.panel__foot {
+  padding: 10px 14px 14px;
+  border-top: 1px solid #eef0f3;
+  background: #fafbfc;
+}
+
+/* ---------- 分组 / 字段 ---------- */
+.group { margin: 10px 0 14px; }
+.group > h2 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #5a6474;
+  letter-spacing: .5px;
+  border-left: 3px solid #1677ff;
+  padding-left: 6px;
+}
+
+.field {
+  display: flex;
+  flex-wrap: wrap;          /* 让 hint 能独占一行，否则会把输入框挤成一条缝 */
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+.field > label { flex: 0 0 88px; color: #5a6474; }
+.field > select,
+.field > input[type="number"],
+.field > input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid #d9dde3;
+  border-radius: 4px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+}
+.field > input[type="color"] {
+  width: 44px;
+  height: 28px;
+  padding: 2px;
+  border: 1px solid #d9dde3;
+  border-radius: 4px;
+  background: #fff;
+}
+.field > .unit { color: #8b93a1; font-size: 12px; }
+.field .hint { flex: 0 0 100%; margin: 0; }
+
+.field .check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: pointer;
+}
+.field .check input { width: 15px; height: 15px; }
+
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 8px;
+  border: 1px solid #d9dde3;
+  border-radius: 4px;
+  resize: vertical;
+  font: 12px/1.7 ui-monospace, Consolas, monospace;
+  color: inherit;
+  background: #fff;
+}
+code {
+  background: #f1f3f6;
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #d9dde3;
+  border-radius: 4px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:hover { border-color: #1677ff; color: #1677ff; }
+button.primary {
+  height: 34px;
+  flex: 1;
+  border-color: #1677ff;
+  background: #1677ff;
+  color: #fff;
+  font-weight: 600;
+}
+button.primary:hover { background: #4096ff; color: #fff; }
+
+.status { color: #5a6474; font-size: 12px; margin-bottom: 4px; }
+.info {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: #f2f6ff;
+  border: 1px solid #dbe6ff;
+  color: #2b4a86;
+  font-size: 12px;
+}
+#editinfo { color: #1677ff; min-height: 18px; }
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: #5a6474;
+  font-size: 12px;
+}
+.field-inline input[type="range"] { flex: 1; }
+
+/* ---------- 右侧舞台 ---------- */
+.stage {
+  flex: 1;
+  height: 100vh;
+  overflow: auto;
+  padding: 20px;
+}
+.sheets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.empty {
+  margin: 40px auto;
+  color: #9aa3b0;
+  text-align: center;
+}
+
+/* ---------- 打印：把界面全部丢掉，只留纸 ---------- */
+@media print {
+  html, body {
+    display: block;
+    background: #fff;
+    height: auto;
+    min-height: 0;
+  }
+  .panel, .no-print, .empty { display: none !important; }
+  .stage {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+  .sheets {
+    display: block;
+    gap: 0;
+  }
+}

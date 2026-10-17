@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>打印测试</title>
+<link rel="stylesheet" href="../src/styles/print.css">
+<style id="page-rule">@page { size: A4 portrait; margin: 0; }</style>
+</head>
+<body>
+<div class="sheets" id="sheets"></div>
+<div id="assert" style="display:none"></div>
+<script type="module">
+/* ============================================================
+ * print.html —— 打印冒烟测试页
+ * ?preset=p1|p2|p3|p4 &n=45
+ * 检查：页数、卡片尺寸、安全区、自动缩字号、矢量文字
+ * ============================================================ */
+import { defaultConfig } from '../src/core/config.js';
+import { cardGeometry } from '../src/core/geometry.js';
+import { applyPageVars, applyPageRule, renderSheets, autoFitAll } from '../src/core/render.js';
+
+const params = new URLSearchParams(location.search);
+const presetId = params.get('preset') || 'p4';
+const count = Math.max(1, Number(params.get('n')) || 45);
+
+const config = defaultConfig(presetId);
+applyPageVars(config);
+applyPageRule(config);
+
+const cards = [];
+for (let i = 1; i <= count; i++) {
+  cards.push({
+    front: 'card' + i,
+    back: '释义' + i,
+    content: 'note' + i,
+    i,
+  });
+}
+if (cards[2]) {
+  cards[2].back = '这是一个非常长的释义，用来测试超出卡片高度时会不会自动缩小字号，' +
+    '如果自动缩放生效，这段文字应该完整地待在卡片内部而不会被裁掉。' +
+    '再加一些字：incomprehensibility internationalization counterproductive.';
+}
+if (cards[3]) cards[3].front = 'internationalization';
+
+await document.fonts.ready;
+
+const sheetsEl = document.getElementById('sheets');
+const t0 = performance.now();
+const sheets = renderSheets(sheetsEl, cards, config);
+if (config.extras.autoFit) autoFitAll(sheetsEl, config.extras.autoFitMin);
+window.__renderMs = Math.round(performance.now() - t0);
+
+const g = cardGeometry(config);
+let overflow = 0;
+for (const cell of sheetsEl.querySelectorAll('.cell')) {
+  const body = cell.querySelector('.body');
+  if (!body) continue;
+  const cs = getComputedStyle(cell);
+  const availH = cell.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const availW = cell.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const rect = body.getBoundingClientRect();
+  if (rect.height > availH + 1 || body.scrollWidth > availW + 1) overflow++;
+}
+
+const p = (n) => n.toFixed(2);
+document.getElementById('assert').textContent =
+  `preset=${presetId}` +
+  ` sheets=${sheets.length}` +
+  ` perPage=${g.perPage}` +
+  ` card=${p(g.w)}x${p(g.h)}` +
+  ` text=${p(g.textW)}x${p(g.textH)}` +
+  ` overflow=${overflow}` +
+  ` ms=${window.__renderMs}`;
+document.title = 'print-test';
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>排版冒烟测试</title>
+<link rel="stylesheet" href="../src/print.css">
+<style id="page-rule">@page { size: A4 landscape; margin: 0; }</style>
+</head>
+<body>
+<div class="sheets" id="sheets"></div>
+<div id="probe" style="display:none"></div>
+<div id="assert" style="display:none"></div>
+<script src="../src/card.js"></script>
+<script>
+/* ============================================================
+ * 排版冒烟测试（给无头 Chrome 用）
+ * ------------------------------------------------------------
+ * 1) 卡片尺寸必须是算出来的：横版 297×210 / 4列5行 / 留白0 / 间距0
+ *    => 74.25 × 42.00 mm，四边安全区各 3mm => 内容可用 68.25 × 36.00 mm
+ * 2) 安全区四边必须真的落到 .cell 的 padding 上（不是只算了数）
+ *    => 上12 右1 下3 左5 时，computed padding 必须是 12/1/3/5 mm
+ *    => 内容可用 74.25-5-1 = 68.25 × 42-12-3 = 27.00 mm
+ * 3) 45 张卡片 + 4×5 网格 => 3 组双面 => 6 张 .sheet => 打印必须 6 页
+ *    （多出来的是空白页，通常意味着 .sheet 高度超过了纸张）
+ * 4) 超长释义 + autoFit => 自动缩字号，不溢出、不被裁切
+ *
+ * 跑法：bash tests/smoke.sh
+ * ============================================================ */
+
+var PX_PER_MM = 96 / 25.4;
+
+/* ---------- 先做探针：非对称安全区 ---------- */
+var cfg2 = CardKit.defaultConfig();
+cfg2.grid.cols = 4;
+cfg2.grid.rows = 5;
+cfg2.card.safe = { top: 12, right: 1, bottom: 3, left: 5 };
+CardKit.applyPageVars(cfg2);
+
+var probeSheet = CardKit.paginate([{ front: 'x', back: 'y', note: '' }], cfg2)[0];
+var probeEl = CardKit.createSheet(probeSheet, cfg2, 0, 1);
+document.getElementById('probe').appendChild(probeEl);
+
+var cs = getComputedStyle(probeEl.querySelector('.cell'));
+var pad = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']
+  .map(function (k) { return Math.round(parseFloat(cs[k]) / PX_PER_MM); }).join('/');
+
+var g2 = CardKit.cardGeometry(cfg2);
+
+/* ---------- 探针 2：背面的安全区必须按镜像方式翻到同一条物理边 ---------- */
+var probe = document.getElementById('probe');
+
+function backSheet(c) {
+  // 一页两张：index 1 就是背面页
+  return CardKit.createSheet(CardKit.paginate([{ front: 'x', back: 'y', note: 'n' }], c)[1], c, 1, 2);
+}
+function safeConfig(mode) {
+  var c = CardKit.defaultConfig();
+  c.grid.cols = 4; c.grid.rows = 5;
+  c.card.safe = { top: 12, right: 1, bottom: 3, left: 5 };   // 四边都不一样，翻错立刻能看出来
+  c.duplex.mirror = mode;
+  return c;
+}
+
+var safeModes = ['none', 'flipX', 'flipY', 'rot180'].map(function (mode) {
+  var el = backSheet(safeConfig(mode));
+  probe.appendChild(el);
+  var s = getComputedStyle(el.querySelector('.cell'));
+  return mode + ':' + ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft']
+    .map(function (k) { return Math.round(parseFloat(s[k]) / PX_PER_MM); }).join('/');
+}).join(',');
+
+/* ---------- 探针 3：内容摆放 / 序号所在的角也要跟着翻 ---------- */
+function layoutConfig(mode, mirrorLayout) {
+  var c = CardKit.defaultConfig();
+  // 探的是背面，所以改反面自己的设定，才能看出"翻没翻"
+  c.back = { font: 'sans', size: 16, weight: '700', lineHeight: 1.2,
+             color: '#111111', align: 'left', valign: 'top', blockAlign: 'left' };
+  c.duplex.mirror = mode;
+  c.duplex.mirrorLayout = mirrorLayout;
+  return c;
+}
+function layoutOf(mode, mirrorLayout) {
+  var el = backSheet(layoutConfig(mode, mirrorLayout));
+  probe.appendChild(el);
+  var s = el.style;
+  return [
+    s.getPropertyValue('--main-align'),
+    s.getPropertyValue('--body-halign'),
+    s.getPropertyValue('--body-valign'),
+    s.getPropertyValue('--note-order'),
+  ].join('|');
+}
+var layout = 'flipX:' + layoutOf('flipX', true) +
+             ' flipY:' + layoutOf('flipY', true) +
+             ' off:' + layoutOf('flipX', false);
+
+/* 序号：正面右下；背面要落到同一个物理角 */
+function numOf(mode) {
+  var el = backSheet(safeConfig(mode));
+  probe.appendChild(el);
+  var s = el.style;
+  return ['--num-left', '--num-right', '--num-top', '--num-bottom'].map(function (k) {
+    var v = s.getPropertyValue(k);
+    return v === 'auto' ? '-'
+      : v.replace('calc(var(--cell-safe-', '').replace(') + 0.5mm)', '');
+  }).join('/');
+}
+var nums = 'flipX:' + numOf('flipX') + ' flipY:' + numOf('flipY');
+
+/* ---------- 再做真正要打印的内容 ---------- */
+var cfg = CardKit.defaultConfig();
+cfg.grid.cols = 4;
+cfg.grid.rows = 5;
+CardKit.applyPageVars(cfg);
+
+var cards = [];
+for (var i = 1; i <= 45; i++) {
+  cards.push({ front: 'card' + i, back: '释义' + i, note: 'note' + i });
+}
+cards[2].back = '这是一个非常长的释义，用来测试超出卡片高度时会不会自动缩小字号，' +
+  '如果自动缩放生效，这段文字应该完整地待在卡片内部而不会被裁掉。' +
+  '再多加一些字：incomprehensibility internationalization counterproductive.';
+
+var sheets = CardKit.paginate(cards, cfg);
+var frag = document.createDocumentFragment();
+sheets.forEach(function (s, i) { frag.appendChild(CardKit.createSheet(s, cfg, i, sheets.length)); });
+document.getElementById('sheets').appendChild(frag);
+if (cfg.extras.autoFit) CardKit.autoFitAll(document.getElementById('sheets'), cfg.extras.autoFitMin);
+
+/* ---------- 供 smoke.sh 用 --dump-dom 断言 ---------- */
+var g = CardKit.cardGeometry(cfg);
+document.getElementById('assert').textContent =
+  'sheets=' + sheets.length +
+  ' card=' + g.w.toFixed(2) + 'x' + g.h.toFixed(2) +
+  ' text=' + g.textW.toFixed(2) + 'x' + g.textH.toFixed(2) +
+  ' perPage=' + g.perPage +
+  ' pad=' + pad +
+  ' safe2=' + g2.textW.toFixed(2) + 'x' + g2.textH.toFixed(2) +
+  ' safeModes=' + safeModes +
+  ' layout=' + layout +
+  ' nums=' + nums;
+document.title = 'smoke';
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>制作卡片 · 单词卡制作</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M18 22h28M18 32h20M18 42h24' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/print.css">
+<link rel="stylesheet" href="src/styles/make.css">
+<style id="page-rule">@page { size: A4 portrait; margin: 0; }</style>
+</head>
+<body class="make-page">
+
+<header class="topbar no-print">
+  <a class="brand" href="import.html" aria-label="回到数据导入">
+    <span class="brand__mark">词</span>
+    <span class="brand__text">单词卡</span>
+  </a>
+  <nav class="steps" aria-label="制作步骤">
+    <a class="step is-done" href="import.html" aria-label="数据导入">
+      <span class="step__num">✓</span><span class="step__text">数据导入</span>
+    </a>
+    <span class="step is-active" aria-current="step" aria-label="制作卡片">
+      <span class="step__num">2</span><span class="step__text">制作卡片</span>
+    </span>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__actions">
+    <span class="badge badge--accent" id="data-badge">0 张</span>
+    <a class="btn" href="import.html" aria-label="更换数据">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+      <span>更换数据</span>
+    </a>
+    <button class="btn btn--primary" id="print-top" type="button" aria-label="打印">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
+      <span>打印</span>
+    </button>
+  </div>
+</header>
+
+<main class="make-layout" id="make-layout">
+  <aside class="settings-pane" id="settings-pane" aria-label="卡片设置">
+    <header class="settings-head">
+      <div class="settings-head__text">
+        <h1>卡片设置</h1>
+        <p class="hint" id="data-summary">还没有数据</p>
+      </div>
+      <button class="icon-btn" id="reset-settings" type="button" title="恢复默认设置" aria-label="恢复默认设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+    </header>
+
+    <div class="settings-scroll">
+      <div class="banner banner--info align-banner" id="align-banner" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <div class="align-banner__body">
+          <span>对位测试中：双面打印后对着光看数字是否重合。</span>
+          <button class="btn btn--sm" id="align-exit" type="button">退出测试</button>
+        </div>
+      </div>
+
+      <section class="settings-primary">
+        <div class="section-title">
+          <h2>常规设置</h2>
+          <span class="badge">常用</span>
+        </div>
+        <div class="preset-grid" id="preset-grid"></div>
+        <div class="primary-fields" id="primary-fields"></div>
+        <div class="geometry-info" id="geometry-info"></div>
+      </section>
+
+      <div class="detail-sections" id="detail-sections"></div>
+    </div>
+
+    <footer class="settings-foot">
+      <div class="settings-foot__actions">
+        <button class="btn only-mobile" id="open-preview-inline" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          预览卡片
+        </button>
+        <button class="btn btn--primary btn--block btn--lg" id="print-main" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
+          打印 / 导出 PDF
+        </button>
+      </div>
+    </footer>
+  </aside>
+
+  <div class="splitter" id="splitter" role="separator" aria-orientation="vertical"
+       aria-label="拖动调整设置区宽度" aria-valuemin="320" aria-valuemax="720" tabindex="0">
+    <span class="splitter__grip" aria-hidden="true"></span>
+  </div>
+
+  <section class="preview-pane" id="preview-pane" aria-label="打印预览">
+    <header class="preview-head">
+      <div class="preview-head__title">
+        <h2>打印预览</h2>
+        <span class="badge" id="preview-meta">0 张</span>
+      </div>
+      <div class="preview-head__tools">
+        <span class="hint preview-hint">数据已确认，预览不可编辑</span>
+        <button class="icon-btn only-mobile" id="preview-close" type="button" aria-label="关闭预览">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="stage" id="stage">
+      <div class="sheets" id="sheets"></div>
+    </div>
+
+    <footer class="preview-foot">
+      <div class="preview-info" id="preview-info">—</div>
+      <div class="zoom-controls">
+        <span class="zoom-label">缩放</span>
+        <input type="range" id="zoom" min="20" max="150" value="70" aria-label="预览缩放">
+        <span class="zoom-value" id="zoom-val">70%</span>
+        <button class="btn btn--sm" id="fit-width" type="button">适应宽度</button>
+        <button class="btn btn--sm btn--primary only-mobile" id="print-preview" type="button">打印</button>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<script type="module" src="src/make/page.js"></script>
+
+<script>
+/* 整个正式版依赖原生 ESM，file:// 下浏览器会拒绝加载模块。这里给一个明确提示。 */
+if (location.protocol === 'file:') {
+  var warn = document.createElement('div');
+  warn.style.cssText = 'position:fixed;left:16px;right:16px;top:16px;z-index:9999;padding:12px 16px;border:1px solid #fecaca;border-radius:10px;background:#fef2f2;color:#991b1b;font:14px/1.6 system-ui,sans-serif;box-shadow:0 8px 30px rgba(15,23,42,.18)';
+  warn.textContent = '请先在项目目录运行 node server.mjs，再打开 http://localhost:8080/ 。浏览器不允许通过 file:// 加载 ES 模块。';
+  document.body.appendChild(warn);
+}
+</script>
+</body>
+</html>

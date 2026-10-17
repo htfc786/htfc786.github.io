@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>单词卡制作 · HTML/CSS 排版</title>
+
+<!-- 打印/排版核心：纸张尺寸、网格、卡片、双面 -->
+<link rel="stylesheet" href="src/print.css">
+<!-- 界面样式：打印时自动隐藏 -->
+<link rel="stylesheet" href="src/ui.css">
+
+<!-- 纸张方向由 JS 按配置改写 -->
+<style id="page-rule">@page { size: A4 landscape; margin: 0; }</style>
+</head>
+<body>
+
+<aside class="panel">
+  <div class="panel__head">
+    <h1>单词卡制作</h1>
+    <p class="hint">纯 HTML + CSS 排版，文字是矢量文本；打印时选「另存为 PDF」即可导出</p>
+    <p class="hint">预览里的字 <b>点一下就能直接改</b>，改完右边的文本框会自动同步</p>
+  </div>
+
+  <div class="panel__body">
+    <section class="group">
+      <h2>内容数据</h2>
+      <textarea id="data" spellcheck="false" placeholder="apple | 苹果 | n.&#10;banana | 香蕉"></textarea>
+      <p class="hint">每行一张卡，格式：<code>正面 | 反面 | 附加信息</code>（后面可省略）；卡内换行写 <code>\n</code></p>
+      <div class="row">
+        <button type="button" id="btn-sample">示例数据</button>
+        <button type="button" id="btn-align">对位测试数据</button>
+        <button type="button" id="btn-clear">清空</button>
+      </div>
+    </section>
+
+    <div id="controls"><!-- 参数面板由 app.js 按 SCHEMA 生成 --></div>
+  </div>
+
+  <div class="panel__foot">
+    <div class="info" id="cardinfo">—</div>
+    <div class="status" id="status">—</div>
+    <div class="status" id="editinfo"></div>
+    <div class="row">
+      <button type="button" class="primary" id="btn-print">打印 / 导出 PDF</button>
+      <button type="button" id="btn-fit">适应宽度</button>
+    </div>
+    <label class="field-inline">
+      预览缩放
+      <input type="range" id="zoom" min="30" max="150" value="70">
+      <span id="zoom-val">70%</span>
+    </label>
+  </div>
+</aside>
+
+<main class="stage">
+  <div class="sheets" id="sheets"></div>
+</main>
+
+<script src="src/card.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>

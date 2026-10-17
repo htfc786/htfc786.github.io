@@ -1,0 +1,210 @@
+/* ============================================================
+ * print.css —— 排版 & 打印核心
+ * ------------------------------------------------------------
+ * 几何尺寸（纸张、边距、间距、安全区）用 mm；
+ * 字号用 pt —— 打印的绝对单位，屏幕和打印一致。
+ * 一张纸 = 一个 .sheet；一个格子 = 一张卡 .cell。
+ *
+ * 裁剪导向：纸张留白默认 0、卡片间距默认 0、无圆角，
+ * 相邻卡片共用同一条裁切线，一刀就是两张卡。
+ * ============================================================ */
+
+:root {
+  --page-w: 210mm;
+  --page-h: 296.9mm;      /* 比纸张少 0.1mm：高度刚好等于纸张时会多吐一张空白页 */
+  --page-pad: 0mm;
+  --cols: 3;
+  --rows: 16;
+  --grid-gap: 0mm;
+
+  --cell-safe-t: 0mm;
+  --cell-safe-r: 0mm;
+  --cell-safe-b: 0mm;
+  --cell-safe-l: 15mm;
+  --cell-bg: #ffffff;
+  --cell-border: 1px dashed #d8dde5;
+
+  --body-valign: center;
+  --body-halign: center;
+  --note-order: 0;
+
+  --num-left: auto;
+  --num-right: calc(var(--cell-safe-r) + 0.5mm);
+  --num-top: auto;
+  --num-bottom: calc(var(--cell-safe-b) + 0.5mm);
+
+  --main-font: sans-serif;
+  --main-size: 16pt;
+  --main-weight: 700;
+  --main-lh: 1.2;
+  --main-color: #111111;
+  --main-align: center;
+
+  --note-gap: 1.5mm;
+  --note-font: sans-serif;
+  --note-size: 8pt;
+  --note-weight: 400;
+  --note-lh: 1.3;
+  --note-color: #8a8f99;
+  --note-align: center;
+
+  --preview-zoom: 1;
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- 一张纸 ---------- */
+.sheet {
+  width: var(--page-w);
+  height: var(--page-h);
+  padding: var(--page-pad);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  gap: var(--grid-gap);
+  background: #ffffff;
+  color: #000000;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--main-font);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ---------- 一张卡 ---------- */
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--body-valign);
+  align-items: var(--body-halign);
+  padding: var(--cell-safe-t) var(--cell-safe-r) var(--cell-safe-b) var(--cell-safe-l);
+  border: var(--cell-border);
+  background: var(--cell-bg);
+  overflow: hidden;
+  break-inside: avoid;
+}
+
+.cell .body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--note-gap);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cell .main {
+  font-family: var(--main-font);
+  font-size: var(--main-size);
+  font-weight: var(--main-weight);
+  line-height: var(--main-lh);
+  color: var(--main-color);
+  text-align: var(--main-align);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.cell .note {
+  order: var(--note-order, 0);
+  font-family: var(--note-font);
+  font-size: var(--note-size);
+  font-weight: var(--note-weight);
+  line-height: var(--note-lh);
+  color: var(--note-color);
+  text-align: var(--note-align);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* 卡片序号：贴在安全区内侧的角上，具体哪个角由 --num-* 决定 */
+.cell .num {
+  position: absolute;
+  left: var(--num-left, auto);
+  right: var(--num-right, auto);
+  top: var(--num-top, auto);
+  bottom: var(--num-bottom, auto);
+  font-family: sans-serif;
+  font-size: 6.5pt;
+  line-height: 1;
+  color: #c8c8c8;
+}
+
+.sheet__num,
+.sheet__tag {
+  position: absolute;
+  font-family: sans-serif;
+  font-size: 7pt;
+  line-height: 1;
+  color: #c8c8c8;
+  z-index: 2;
+}
+.sheet__num { right: 4mm; bottom: 2mm; }
+.sheet__tag { left: 1.5mm; top: 1mm; }
+
+/* ---------- 预览容器 ---------- */
+.sheets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* ============================================================
+ * 屏幕专用：预览缩放、安全区参考线
+ * （全部放在 @media screen，绝不会影响打印）
+ * ============================================================ */
+@media screen {
+  .sheet {
+    zoom: var(--preview-zoom, 1);
+    box-shadow: 0 3px 16px rgba(15, 23, 42, .16);
+  }
+
+  .sheet.show-guide .cell::after {
+    content: "";
+    position: absolute;
+    top: var(--cell-safe-t);
+    right: var(--cell-safe-r);
+    bottom: var(--cell-safe-b);
+    left: var(--cell-safe-l);
+    border: 0;
+    pointer-events: none;
+  }
+  .sheet.show-guide.guide-t .cell::after { border-top: 1px dashed rgba(37, 99, 235, .45); }
+  .sheet.show-guide.guide-r .cell::after { border-right: 1px dashed rgba(37, 99, 235, .45); }
+  .sheet.show-guide.guide-b .cell::after { border-bottom: 1px dashed rgba(37, 99, 235, .45); }
+  .sheet.show-guide.guide-l .cell::after { border-left: 1px dashed rgba(37, 99, 235, .45); }
+}
+
+/* ============================================================
+ * 打印：一页一张，不留缝
+ * ============================================================ */
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff;
+    height: auto;
+    min-height: 0;
+  }
+  .sheets {
+    display: block;
+    gap: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .sheet {
+    zoom: 1 !important;
+    box-shadow: none;
+    margin: 0;
+    break-after: page;
+    break-inside: avoid;
+  }
+  .sheet:last-child { break-after: auto; }
+  .sheet__tag { display: none; }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

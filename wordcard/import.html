@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>数据导入 · 单词卡制作</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M18 22h28M18 32h20M18 42h24' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/import.css">
+</head>
+<body class="import-page">
+
+<header class="topbar">
+  <a class="brand" href="import.html" aria-label="单词卡制作首页">
+    <span class="brand__mark">词</span>
+    <span class="brand__text">单词卡</span>
+  </a>
+  <nav class="steps" aria-label="制作步骤">
+    <span class="step is-active" aria-current="step" aria-label="数据导入">
+      <span class="step__num">1</span><span class="step__text">数据导入</span>
+    </span>
+    <a class="step" href="make.html" aria-label="制作卡片">
+      <span class="step__num">2</span><span class="step__text">制作卡片</span>
+    </a>
+  </nav>
+  <div class="topbar__spacer"></div>
+  <div class="topbar__actions">
+    <span class="badge badge--accent" id="top-count">0 张</span>
+    <a class="btn btn--primary" id="go-make-top" href="make.html" aria-label="下一步：制作卡片">
+      下一步
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</header>
+
+<main class="import-layout">
+  <aside class="ops-pane" aria-label="数据操作">
+    <div class="ops-scroll">
+      <section class="panel-card">
+        <div class="panel-card__head">
+          <h2>数据来源</h2>
+          <span class="badge" id="source-state">未选择</span>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="source-select">词表 / 数据集</label>
+          <select class="select" id="source-select" disabled>
+            <option>正在载入词表…</option>
+          </select>
+        </div>
+
+        <div class="range-box" id="range-box" hidden>
+          <div class="range-box__head">
+            <span class="field__label">序号范围</span>
+            <span class="hint" id="range-total"></span>
+          </div>
+          <div class="range-inputs">
+            <input class="input" id="range-min" type="number" inputmode="numeric" min="1" step="1" aria-label="起始序号">
+            <span class="range-dash">—</span>
+            <input class="input" id="range-max" type="number" inputmode="numeric" min="1" step="1" aria-label="结束序号">
+            <button class="btn btn--sm" id="range-apply" type="button">应用</button>
+          </div>
+          <p class="hint" id="range-hint">只制作这个序号范围内的词</p>
+        </div>
+
+        <button class="btn btn--block" id="open-import" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>
+          导入数据
+        </button>
+        <p class="hint hint--tight" style="margin-top:8px">JSON · Markdown 表格 · CSV / TSV</p>
+        <div class="banner banner--error" id="catalog-error" hidden></div>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-card__head">
+          <h2>当前数据</h2>
+          <span class="badge" id="dirty-state">未修改</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="stat__num" id="stat-total">0</span>
+            <span class="stat__label">总条数</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num" id="stat-visible">0</span>
+            <span class="stat__label">当前范围</span>
+          </div>
+          <div class="stat stat--source">
+            <span class="stat__text" id="stat-source">—</span>
+            <span class="stat__label">来源</span>
+          </div>
+        </div>
+        <div class="row row--tight" style="margin-top:12px">
+          <button class="btn btn--sm" id="add-row" type="button">添加一行</button>
+          <button class="btn btn--sm" id="export-json" type="button">导出 JSON</button>
+          <button class="btn btn--sm btn--danger" id="clear-data" type="button">清空</button>
+        </div>
+        <p class="hint hint--tight" id="add-hint" hidden>预设词表不能直接加行；需要增删请导入为自定义数据。</p>
+      </section>
+
+      <section class="panel-card panel-card--muted">
+        <h2>格式说明</h2>
+        <ul class="tip-list">
+          <li><b>JSON</b>：数组，字段 <code>front</code>、<code>back</code>、<code>content</code>，可选 <code>i</code> 作为序号。</li>
+          <li><b>Markdown</b>：自动忽略表格外的说明文字；有多张表时可在下一步选择。</li>
+          <li><b>CSV / TSV</b>：自动识别分隔符和表头，可手动映射列。</li>
+          <li>有 <code>i</code> 字段时，卡片序号就用它；没有时按顺序编号。</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer class="ops-foot">
+      <div class="save-state" id="save-state" role="status" aria-live="polite">数据会自动保存在本机</div>
+      <div class="ops-foot__actions">
+        <button class="btn only-mobile" id="open-preview-inline" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          预览数据
+        </button>
+        <a class="btn btn--primary btn--block btn--lg" id="go-make" href="make.html">
+          下一步：制作卡片
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </footer>
+  </aside>
+
+  <section class="preview-pane" id="preview-pane" aria-label="数据预览">
+    <header class="preview-head">
+      <div class="preview-head__title">
+        <h2>数据预览</h2>
+        <p class="hint">点单元格直接改，内容即时保存</p>
+      </div>
+      <div class="preview-head__tools">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input class="input input--sm" id="search-input" type="search" placeholder="搜索单词 / 释义…" aria-label="搜索数据">
+        </div>
+        <button class="icon-btn only-mobile" id="preview-close" type="button" aria-label="关闭数据预览">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <colgroup>
+          <col class="col-i">
+          <col class="col-front">
+          <col class="col-back">
+          <col class="col-content">
+          <col class="col-del">
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">序号</th>
+            <th scope="col">正面<span class="th-hint">单词</span></th>
+            <th scope="col">反面<span class="th-hint">释义</span></th>
+            <th scope="col">附加信息<span class="th-hint">可选</span></th>
+            <th scope="col"><span class="sr-only">删除</span></th>
+          </tr>
+        </thead>
+        <tbody id="data-body"></tbody>
+      </table>
+      <div class="empty" id="preview-empty" hidden>
+        <strong>还没有数据</strong>
+        <span>从左侧选择预设词表，或导入自己的数据。</span>
+      </div>
+    </div>
+
+    <footer class="preview-foot">
+      <div class="hint" id="row-range">显示 0–0 / 共 0 条</div>
+      <div class="pager">
+        <select class="select select--sm" id="page-size" aria-label="每页条数">
+          <option value="50">每页 50</option>
+          <option value="100">每页 100</option>
+          <option value="200">每页 200</option>
+        </select>
+        <button class="icon-btn" id="page-prev" type="button" aria-label="上一页">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <span class="page-label" id="page-label">1 / 1</span>
+        <button class="icon-btn" id="page-next" type="button" aria-label="下一页">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </footer>
+  </section>
+</main>
+
+<dialog class="app-dialog import-dialog" id="import-dialog" aria-labelledby="import-dialog-title">
+  <div class="dialog__head">
+    <div>
+      <div class="dialog__title" id="import-dialog-title">导入数据</div>
+      <p class="hint">JSON / Markdown 表格 / CSV，自动识别格式</p>
+    </div>
+    <button class="icon-btn" id="wizard-close" type="button" aria-label="关闭导入窗口">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <div class="dialog__body">
+    <ol class="wizard-steps" id="wizard-steps">
+      <li class="is-active" data-dot="1"><span>1</span>粘贴或选择</li>
+      <li data-dot="2"><span>2</span>确认表格与字段</li>
+    </ol>
+
+    <section class="wizard-step" data-step="1">
+      <div class="dropzone" id="import-dropzone" role="button" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+        <strong>拖入文件，或点击选择</strong>
+        <span>.json · .md · .csv · .txt</span>
+        <input type="file" id="import-file" accept=".json,.md,.markdown,.csv,.tsv,.txt,text/plain,application/json,text/csv" hidden>
+      </div>
+
+      <div class="format-row">
+        <label class="field__label" for="import-format">格式</label>
+        <select class="select select--sm" id="import-format">
+          <option value="auto">自动识别</option>
+          <option value="json">JSON</option>
+          <option value="markdown">Markdown 表格</option>
+          <option value="csv">CSV / TSV</option>
+        </select>
+        <span class="badge badge--accent" id="import-detected" hidden></span>
+      </div>
+
+      <label class="field__label" for="import-text">或直接粘贴内容</label>
+      <textarea class="textarea import-text" id="import-text" spellcheck="false" placeholder="粘贴 JSON、Markdown 表格或 CSV…"></textarea>
+      <p class="banner banner--error" id="import-error" hidden></p>
+      <p class="hint">Markdown 表格上下的说明文字会自动忽略；识别到多张表时，下一步可以选。</p>
+    </section>
+
+    <section class="wizard-step" data-step="2" hidden>
+      <div id="table-picker"></div>
+
+      <div class="map-head">
+        <label class="switch" id="header-switch">
+          <input type="checkbox" id="import-header" checked>
+          <span class="switch__track"></span>
+          首行是表头
+        </label>
+        <span class="badge" id="table-meta"></span>
+      </div>
+
+      <div class="map-layout">
+        <div class="map-fields" id="map-fields"></div>
+        <div class="map-preview" id="map-preview"></div>
+      </div>
+
+      <div class="mode-row">
+        <span class="field__label">导入方式</span>
+        <label class="radio"><input type="radio" name="import-mode" value="replace" checked> 替换当前数据</label>
+        <label class="radio"><input type="radio" name="import-mode" value="append"> 追加到末尾</label>
+      </div>
+      <p class="banner banner--error" id="map-error" hidden></p>
+    </section>
+  </div>
+
+  <div class="dialog__foot">
+    <button class="btn" id="wizard-cancel" type="button">取消</button>
+    <span class="spacer"></span>
+    <button class="btn" id="wizard-back" type="button" hidden>上一步</button>
+    <button class="btn btn--primary" id="wizard-next" type="button">解析</button>
+    <button class="btn btn--primary" id="wizard-import" type="button" hidden>导入</button>
+  </div>
+</dialog>
+
+<script type="module" src="src/import/page.js"></script>
+
+<script>
+/* 整个正式版依赖原生 ESM，file:// 下浏览器会拒绝加载模块。这里给一个明确提示。 */
+if (location.protocol === 'file:') {
+  var warn = document.createElement('div');
+  warn.style.cssText = 'position:fixed;left:16px;right:16px;top:16px;z-index:9999;padding:12px 16px;border:1px solid #fecaca;border-radius:10px;background:#fef2f2;color:#991b1b;font:14px/1.6 system-ui,sans-serif;box-shadow:0 8px 30px rgba(15,23,42,.18)';
+  warn.textContent = '请先在项目目录运行 node server.mjs，再打开 http://localhost:8080/ 。浏览器不允许通过 file:// 加载 ES 模块。';
+  document.body.appendChild(warn);
+}
+</script>
+</body>
+</html>

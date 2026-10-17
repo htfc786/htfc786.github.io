@@ -1,0 +1,226 @@
+/* ============================================================
+ * print.css —— 排版 & 打印核心
+ * ------------------------------------------------------------
+ * 约定：
+ *   几何尺寸（纸张、边距、间距、安全区）一律用 mm
+ *   字号一律用 pt —— 打印的绝对单位，屏幕和打印一致
+ *   一张纸 = 一个 .sheet；一个格子 = 一张卡 .cell
+ *
+ * 裁剪导向的设计：
+ *   页面留白默认 0、卡片间距默认 0、不做圆角 —— 卡片铺满整张纸，
+ *   相邻卡片共用同一条裁切线，一刀切下去就是一张卡。
+ *   最外圈被打印机的不可打印区吃掉一点，属于预期内（那边本来没内容）。
+ * ============================================================ */
+
+:root {
+  --page-w: 297mm;
+  --page-h: 209.9mm;      /* 比纸张少 0.1mm：高度刚好等于纸张时会多吐一张空白页 */
+  --page-pad: 0mm;        /* 纸张四周留白，默认 0（铺满，方便裁剪） */
+  --cols: 4;
+  --rows: 5;
+  --grid-gap: 0mm;        /* 卡片间距，默认 0（相邻卡片共用裁切线） */
+
+  /* 安全区：夹子、打孔、装订会占用的边带，内容不进入这块区域。
+     四边独立设置 —— 只夹一边就只调那一边，其余留 0，不浪费版面。 */
+  --cell-safe-t: 3mm;
+  --cell-safe-r: 3mm;
+  --cell-safe-b: 3mm;
+  --cell-safe-l: 3mm;
+  --cell-bg: #ffffff;
+  --cell-border: 1px dashed #c8c8c8;
+
+  /* 整块内容在卡片里的位置（由 JS 按"垂直位置/整块水平位置"写成 flex 值，
+     背面的值会按镜像方式翻过来） */
+  --body-valign: center;
+  --body-halign: center;
+  --note-order: 0;        /* 上下镜像时附加信息翻到正文上方 */
+
+  /* 卡片序号落在哪个角：正面右下；背面由 JS 翻到对应的物理角 */
+  --num-left: auto;
+  --num-right: calc(var(--cell-safe-r) + 0.5mm);
+  --num-top: auto;
+  --num-bottom: calc(var(--cell-safe-b) + 0.5mm);
+
+  /* 正文样式（正/反面各自覆盖，这里是兜底） */
+  --main-font: sans-serif;
+  --main-size: 16pt;
+  --main-weight: 700;
+  --main-lh: 1.2;
+  --main-color: #111111;
+  --main-align: center;
+
+  /* 附加信息（小字）样式 */
+  --note-gap: 1.5mm;
+  --note-font: sans-serif;
+  --note-size: 8pt;
+  --note-weight: 400;
+  --note-lh: 1.3;
+  --note-color: #888888;
+  --note-align: center;
+
+  --preview-zoom: 1;      /* 仅屏幕预览用 */
+}
+
+* { box-sizing: border-box; }
+
+/* ---------- 一张纸 ---------- */
+.sheet {
+  width: var(--page-w);
+  height: var(--page-h);
+  padding: var(--page-pad);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--rows), minmax(0, 1fr));
+  gap: var(--grid-gap);
+  background: #ffffff;
+  color: #000000;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--main-font);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ---------- 一张卡 ---------- */
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* 整块内容的垂直位置 / 整块水平位置：靠这两个变量实现
+     "文字块居中，但每行仍从左起排" 这类组合 */
+  justify-content: var(--body-valign);
+  align-items: var(--body-halign);
+  padding: var(--cell-safe-t) var(--cell-safe-r) var(--cell-safe-b) var(--cell-safe-l);
+  border: var(--cell-border);
+  background: var(--cell-bg);
+  overflow: hidden;
+  break-inside: avoid;
+}
+
+/* 内容区：宽度收缩到内容本身（fit-content），
+   所以 .cell 的 align-items 决定的是"整块文字"的位置，
+   而每行内部的对齐由各文本块自己的 text-align 决定。 */
+.cell .body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--note-gap);       /* 用 gap 而不是 margin：正反、正序倒序都成立 */
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cell .main {
+  font-family: var(--main-font);
+  font-size: var(--main-size);
+  font-weight: var(--main-weight);
+  line-height: var(--main-lh);
+  color: var(--main-color);
+  text-align: var(--main-align);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;      /* 内容里的 \n 真的换行，且保留空格 */
+}
+
+.cell .note {
+  order: var(--note-order, 0);
+  font-family: var(--note-font);
+  font-size: var(--note-size);
+  font-weight: var(--note-weight);
+  line-height: var(--note-lh);
+  color: var(--note-color);
+  text-align: var(--note-align);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* 卡片序号：贴在安全区内侧的角上。具体哪个角由 --num-* 决定，
+   正面是右下，背面会翻到同一物理角（右边夹夹子 → 正反面序号都在那条边） */
+.cell .num {
+  position: absolute;
+  left: var(--num-left, auto);
+  right: var(--num-right, auto);
+  top: var(--num-top, auto);
+  bottom: var(--num-bottom, auto);
+  font-family: sans-serif;
+  font-size: 6.5pt;
+  line-height: 1;
+  color: #c8c8c8;
+}
+
+.sheet__num,
+.sheet__tag {
+  position: absolute;
+  font-family: sans-serif;
+  font-size: 7pt;
+  line-height: 1;
+  color: #c8c8c8;
+  z-index: 2;
+}
+.sheet__num { right: 4mm; bottom: 2mm; }
+.sheet__tag { left: 1.5mm; top: 1mm; }
+
+/* ============================================================
+ * 屏幕专用：预览缩放、安全区参考线、可视化编辑的焦点样式
+ * （全部放在 @media screen 里，绝不会影响打印结果）
+ * ============================================================ */
+@media screen {
+  .sheet {
+    zoom: var(--preview-zoom);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.16);
+  }
+
+  /* 安全区参考线：四边各自的边界，告诉用户内容到了哪条线为止 */
+  .show-guide .cell::after {
+    content: '';
+    position: absolute;
+    top: var(--cell-safe-t);
+    right: var(--cell-safe-r);
+    bottom: var(--cell-safe-b);
+    left: var(--cell-safe-l);
+    border: 1px dashed rgba(22, 119, 255, 0.45);
+    pointer-events: none;
+  }
+
+  [contenteditable="true"] {
+    outline: none;
+    cursor: text;
+    min-height: 1em;
+  }
+  [contenteditable="true"]:hover { background: rgba(22, 119, 255, 0.06); }
+  [contenteditable="true"]:focus {
+    background: rgba(22, 119, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.35);
+  }
+  /* 空格子给个占位提示，否则点不中 */
+  [contenteditable="true"]:empty::before {
+    content: attr(data-ph);
+    color: #d5d9e0;
+  }
+  .cell--active { box-shadow: inset 0 0 0 2px rgba(22, 119, 255, 0.55); }
+}
+
+/* ============================================================
+ * 打印：一页一张，不留缝
+ * ============================================================ */
+@media print {
+  /* body 的 8px 默认边距会让 .sheet 微微超出纸张，结果每页多吐一张空白页 */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff;
+  }
+  .sheet {
+    zoom: 1 !important;
+    box-shadow: none;
+    margin: 0;
+    break-after: page;
+    break-inside: avoid;
+  }
+  .sheet:last-child { break-after: auto; }
+  .sheet__tag { display: none; }      /* 屏幕辅助标记不打印 */
+  [contenteditable]:focus { background: none !important; box-shadow: none !important; }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

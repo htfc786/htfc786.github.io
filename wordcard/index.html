@@ -1,44 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>单词小卡片</title>
-<script src="jspdf.umd.min.js"></script>
-<script src="html2canvas.min.js"></script>
-<link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>单词卡制作</title>
+<meta http-equiv="refresh" content="0; url=import.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M18 22h28M18 32h20M18 42h24' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:15px/1.6 system-ui,sans-serif;background:#f5f6f8;color:#4b5563}a{color:#2563eb}</style>
 </head>
 <body>
-  <div id="app">
-    <div class="paper">
-      <!-- 操作区 -->
-      <div class="paper-operate">
-        <button id="gen">生成卡片</button>
-        <button id="print">打印</button>
-        <button id="export">导出PDF</button>
-        <a target="_blank" href="https://basic.smartedu.cn/tchMaterial?defaultTag=fa6200b8-b4aa-4d72-bebb-dddd93022a13%2Ff5054dec-250d-4403-8d89-5276ccfe1fba%2Faadf4535-4698-46bc-9d73-cb7694341c74">获取单词表</a>
-        <a target="_blank" href="https://github.com/htfc786/htfc786.github.io/tree/main/wordcard">代码开源</a>
-      </div>
-      <!-- 卡片展示 -->
-      <div id="paperlist"></div>
-    </div>
-    <div class="words">
-      <div class="wordlist-input">
-        <textarea id="wordliststring" placeholder="请粘贴单词表" rows="5"></textarea>
-      </div>
-      <!-- 操作按钮区 -->
-      <div class="wordlist-operate">
-        <button id="wordlistbtn">解析单词表</button>
-      </div>
-      <!-- 有标线 -->
-      <table class="wordlist" border>
-        <thead>
-          <tr><th width="32px">序号</th><th>单词</th><th>中文</th><th>音标</th></tr>
-        </thead>
-        <tbody id="wordlist"></tbody>
-      </table>
-    </div>
-  </div>
-<script src="scripts.js"></script>
-<script src="ui.js"></script>
+<p>正在进入 <a href="import.html">单词卡制作</a>…</p>
 </body>
 </html>

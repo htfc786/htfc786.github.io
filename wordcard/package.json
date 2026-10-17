@@ -1,0 +1,14 @@
+{
+  "name": "wordcard",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "单词卡制作：浏览器原生 ESM，无构建、无依赖",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "bash tests/run.sh"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
